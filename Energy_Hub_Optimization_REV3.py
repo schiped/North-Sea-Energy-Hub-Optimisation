@@ -20,7 +20,7 @@ import numpy_financial as npf
 "--------------------Reading Input Data-------------------"
 "---------------------------------------------------"
 #Read Input File
-cwd = os.getcwd()                                                              #get Current Working Directory        
+cwd = os.path.dirname(os.path.abspath(__file__))                                                              #get Current Working Directory        
 input_file = os.path.join(cwd, 'input', "input_file.xlsx")                     #create Input File directory
 
 def readExcel (input_file):                                                    #Reading Excel Sheets, use index_col argunment to have the first column as the value of row, then I use loc
@@ -422,7 +422,8 @@ def CreateModel (df_general, df_economic, df_solar, df_wind, df_storage, df_Hydr
 
 model = CreateModel(df_general, df_economic, df_solar, df_wind, df_storage, df_Hydrogen, df_EWind_h, df_EPV_h,df_electricity_prices)      
   
-opt = pyo.SolverFactory('gurobi')
+# Original runs used Gurobi; HiGHS (pip install highspy) solves the same MILP for free.
+opt = pyo.SolverFactory(os.environ.get('SOLVER', 'appsi_highs'))
 results = opt.solve(model, tee=True)
 # model.pprint()
 results.write()
